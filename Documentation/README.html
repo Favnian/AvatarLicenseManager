@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avatar License Manager — README</title>
+  <style>
+    :root {
+      --accent: #5b8dee;
+      --warn: #e8a84c;
+      --bg: #1a1d27;
+      --surface: #242736;
+      --surface2: #2d3148;
+      --border: #383d5a;
+      --text: #e2e6f3;
+      --text-muted: #8b93b8;
+      --tag-bg: #2e3457;
+      --tag-text: #8ba7e8;
+      --code-bg: #1e2235;
+      --green: #4caf82;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page-wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1f2540 0%, #2b3260 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 40px 36px 36px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,141,238,0.15) 0%, transparent 70%);
+    }
+    .hero-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .hero-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 18px; }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .badge {
+      display: inline-block;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .hero-desc { color: var(--text-muted); font-size: 14.5px; max-width: 640px; }
+
+    /* TOC */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 36px;
+    }
+    .toc-title {
+      font-size: 13px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
+    }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 4px; }
+    .toc a { color: var(--text); font-size: 14px; }
+    .toc a:hover { color: var(--accent); }
+
+    /* Sections */
+    .section { margin-bottom: 44px; }
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      font-size: 20px; width: 36px; height: 36px;
+      background: var(--surface2); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    h2 { font-size: 20px; font-weight: 600; color: #fff; }
+
+    /* Flow diagram */
+    .flow {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 24px; margin-bottom: 20px;
+    }
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; min-width: 100px; padding: 0 8px;
+    }
+    .flow-icon {
+      font-size: 22px; margin-bottom: 6px;
+      width: 44px; height: 44px; background: var(--surface2);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .flow-label { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .flow-arrow { font-size: 18px; color: var(--border); padding: 0 4px; margin-top: -14px; }
+
+    /* Cards */
+    .card-grid { display: grid; gap: 14px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 18px 20px;
+    }
+    .card-title { font-weight: 600; color: #fff; margin-bottom: 6px; font-size: 15px; }
+    .card-desc { color: var(--text-muted); font-size: 14px; }
+    .card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .card-grid-2 { grid-template-columns: 1fr; } }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step {
+      display: flex; gap: 16px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px;
+    }
+    .step-num {
+      width: 28px; height: 28px; background: var(--accent); color: #fff;
+      border-radius: 50%; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .step-title { font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .step-desc { color: var(--text-muted); font-size: 14px; }
+
+    /* Screenshot-like UI mockup */
+    .ui-mockup {
+      background: #1a1c2a; border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; margin: 16px 0;
+    }
+    .ui-mockup-bar {
+      background: #252839; padding: 8px 14px;
+      font-size: 12px; color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .ui-mockup-body { padding: 16px 18px; font-size: 13px; font-family: monospace; }
+    .ui-drop { border: 2px dashed var(--border); border-radius: 6px; padding: 14px; text-align: center; color: var(--text-muted); margin-bottom: 10px; }
+    .ui-card { background: var(--surface2); border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; }
+    .ui-card-title { color: #fff; font-weight: 600; margin-bottom: 4px; }
+    .ui-file-row { display: flex; gap: 6px; align-items: center; }
+    .ui-file-path { color: var(--accent); flex: 1; }
+    .ui-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); border-radius: 4px; padding: 1px 8px; font-size: 12px; }
+    .ui-warn { color: var(--warn); font-size: 12px; }
+    .ui-ok { color: var(--green); font-size: 12px; }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px; background: var(--code-bg); color: #a8c7fa;
+      padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border);
+    }
+
+    .notice {
+      display: flex; gap: 12px; background: var(--surface2);
+      border-left: 4px solid var(--warn); border-radius: 0 8px 8px 0;
+      padding: 14px 18px; margin-bottom: 18px;
+    }
+    .notice-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .notice-body { font-size: 14px; color: var(--text-muted); }
+    .notice-body strong { color: var(--text); }
+
+    .keyword-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .keyword-table th {
+      background: var(--surface2); color: var(--text-muted); text-align: left;
+      padding: 9px 14px; font-weight: 600; font-size: 12px; letter-spacing: 0.05em;
+    }
+    .keyword-table td { padding: 9px 14px; border-top: 1px solid var(--border); color: var(--text); }
+    .keyword-table tr:hover td { background: var(--surface2); }
+    .keyword-table .mono { font-family: monospace; color: #a8c7fa; }
+
+    .file-tree {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 18px 20px; font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px; color: var(--text-muted); line-height: 1.9;
+    }
+    .file-tree .folder { color: var(--accent); }
+    .file-tree .generated { color: #8ba7a8; }
+    .file-tree .comment { color: #555e8a; margin-left: 8px; }
+    .file-tree .new { color: var(--green); }
+
+    .footer {
+      margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 13px; text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-title">Avatar License Manager</div>
+    <div class="hero-subtitle">by StarSideUp</div>
+    <div class="badge-row">
+      <span class="badge">Unity 2022.3+</span>
+      <span class="badge">VRChat Avatar SDK</span>
+      <span class="badge">Editor Only</span>
+      <span class="badge">v0.1.0</span>
+    </div>
+    <div class="hero-desc">
+      アバターの Prefab を Unity Editor にドロップするだけで、そのアバターが参照している
+      すべてのアセット（衣装・ヘア・シェーダーなど）を自動解析。製品ごとにライセンスファイルの
+      場所をひとめで把握できます。<br><br>
+      Drop your avatar Prefab into the tool — it scans all asset dependencies, groups them
+      by product, and shows you where each license file lives.
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">目次 / Contents</div>
+    <ol>
+      <li><a href="#how-it-works">仕組み / How It Works</a></li>
+      <li><a href="#features">主な機能 / Features</a></li>
+      <li><a href="#how-to-use">使い方 / How to Use</a></li>
+      <li><a href="#detection">ライセンスファイルの検出ルール / Detection Rules</a></li>
+      <li><a href="#files">フォルダ構成 / File Structure</a></li>
+      <li><a href="#notice">注意事項 / Notes</a></li>
+    </ol>
+  </div>
+
+  <!-- How It Works -->
+  <div class="section" id="how-it-works">
+    <div class="section-header">
+      <div class="section-icon">⚙</div>
+      <h2>仕組み / How It Works</h2>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">🎭</div>
+        <div class="flow-label">Avatar<br>Prefab</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">🔗</div>
+        <div class="flow-label">依存解析<br>Dependency<br>Scan</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">📦</div>
+        <div class="flow-label">製品グループ化<br>Product<br>Grouping</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">📄</div>
+        <div class="flow-label">ライセンス<br>ファイル検出<br>License Search</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">✅</div>
+        <div class="flow-label">パス表示<br>Path View</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">製品の自動グループ化について</div>
+      <div class="card-desc">
+        Unity の AssetDatabase が管理するすべての依存アセットのパスを解析し、
+        <code>Assets/&lt;Vendor&gt;/&lt;Product&gt;</code> の階層パターンを製品ルートとして自動認識します。<br>
+        例: <code>Assets/SomeShop/ExampleOutfit/Prefabs/Outfit.prefab</code> →
+        製品ルート: <code>Assets/SomeShop/ExampleOutfit</code>（販売者: <em>SomeShop</em>、製品名: <em>ExampleOutfit</em>）<br><br>
+        自動抽出した販売者名・製品名はウィンドウ上で手動編集できます。
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="section" id="features">
+    <div class="section-header">
+      <div class="section-icon">✦</div>
+      <h2>主な機能 / Features</h2>
+    </div>
+    <div class="card-grid-2">
+      <div class="card">
+        <div class="card-title">Prefab ドロップで依存解析</div>
+        <div class="card-desc">
+          アバター Prefab をドロップするだけで、参照しているすべてのアセットを収集し
+          製品単位に自動グループ化します。Project View でも Hierarchy でも対応します。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">ライセンスファイルの自動検出</div>
+        <div class="card-desc">
+          各製品フォルダ内を再帰スキャンし、<code>利用規約.txt</code> や
+          <code>avatar-license.json</code> などを自動検出してパスを一覧表示します。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ping / 開く</div>
+        <div class="card-desc">
+          検出したライセンスファイルを Project View にハイライト（Ping）するか、
+          OS の既定アプリ（PDF ビューワーなど）で直接開けます。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">製品ごとのメモ</div>
+        <div class="card-desc">
+          製品ごとに改変可否・クレジット要否などのメモを自由に記入できます。
+          分析結果とともに ScriptableObject として保存されます。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">販売者名・製品名を編集可能</div>
+        <div class="card-desc">
+          自動検出した名前が正しくない場合は、ウィンドウ上で直接編集できます。
+          編集内容は次回分析時にも引き継がれます。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">セッション間で保持</div>
+        <div class="card-desc">
+          分析結果とメモは ScriptableObject として保存され、Unity を再起動しても
+          前回の状態が復元されます。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to Use -->
+  <div class="section" id="how-to-use">
+    <div class="section-header">
+      <div class="section-icon">▶</div>
+      <h2>使い方 / How to Use</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">ウィンドウを開く</div>
+          <div class="step-desc">
+            Unity メニューの <code>Tools &gt; StarSideUp &gt; Avatar License Manager</code> を選択します。
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">アバター Prefab を指定する</div>
+          <div class="step-desc">
+            以下のいずれかの方法でアバターを指定します。<br>
+            <strong>① ドロップ</strong> — Project View または Hierarchy からアバター Prefab を
+            ウィンドウ上部のドロップゾーンにドラッグ＆ドロップします。<br>
+            <strong>② ObjectField</strong> — ドロップゾーン下の「Avatar Prefab」欄に直接ドラッグします。<br>
+            <strong>③ 選択中を使う</strong> — Project View または Hierarchy でアバターを選択してから
+            「選択中を使う」ボタンを押します。
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">「分析する」を押す</div>
+          <div class="step-desc">
+            「分析する / Analyze」ボタンを押すと、Prefab の推移的依存アセットを解析し、
+            製品ルートを自動検出してライセンスファイルをスキャンします。
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">製品カードでライセンスファイルを確認する</div>
+          <div class="step-desc">
+            検出された製品が一覧表示されます。各カードに含まれる情報:<br>
+            ・<strong>ライセンスファイルのパス</strong>（<code>Assets/...</code> 形式）<br>
+            ・<strong>Ping</strong> → Project View でファイルをハイライト<br>
+            ・<strong>開く</strong> → OS 既定アプリで開く（PDF ビューワーなど）<br>
+            ライセンスファイルが見つからない場合は警告アイコンが表示されます。
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">名前を修正する（必要に応じて）</div>
+          <div class="step-desc">
+            自動検出した販売者名・製品名がフォルダ名と異なる場合は、カード内の
+            「販売者」「製品名」欄を直接編集できます。
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">メモを記入する（任意）</div>
+          <div class="step-desc">
+            各製品カードのメモ欄に、利用規約の要約・改変可否・クレジット要否などを
+            自由に書き残せます。再分析時にもメモは引き継がれます。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI mockup -->
+    <div class="ui-mockup" style="margin-top:20px;">
+      <div class="ui-mockup-bar">Avatar License Manager — ウィンドウ概観イメージ</div>
+      <div class="ui-mockup-body">
+        <div class="ui-drop">アバター Prefab をここにドロップ<br><span style="color:#555e8a; font-size:11px;">Drop avatar Prefab here</span></div>
+        <div style="color:var(--text-muted); font-size:12px; margin-bottom:10px;">対象: Assets/SomeProject/MyAvatar.prefab</div>
+        <div style="margin-bottom:12px; font-size:12px; color:var(--green);">Avatar: MyAvatar　製品数: 3　ライセンス検出: 2　未検出: 1</div>
+        <div class="ui-card">
+          <div class="ui-card-title" style="font-size:13px;">▼ &nbsp;SomeShop &nbsp;/&nbsp; ExampleOutfit &nbsp;<span class="ui-ok">●</span></div>
+          <div style="font-size:12px; color:var(--text-muted); margin:4px 0;">フォルダ: Assets/SomeShop/ExampleOutfit &nbsp;<span class="ui-btn">Ping</span></div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">ライセンスファイル</div>
+          <div class="ui-file-row">
+            <span class="ui-file-path" style="font-size:12px;">Assets/SomeShop/ExampleOutfit/利用規約.pdf</span>
+            <span class="ui-btn">Ping</span><span class="ui-btn">開く</span>
+          </div>
+        </div>
+        <div class="ui-card">
+          <div class="ui-card-title" style="font-size:13px;">▼ &nbsp;AnotherShop &nbsp;/&nbsp; CoolHair &nbsp;<span class="ui-warn">⚠</span></div>
+          <div style="font-size:12px; color:var(--warn);">ライセンスファイルが見つかりませんでした。フォルダを Ping して手動で確認してください。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detection Rules -->
+  <div class="section" id="detection">
+    <div class="section-header">
+      <div class="section-icon">🔍</div>
+      <h2>ライセンスファイルの検出ルール / Detection Rules</h2>
+    </div>
+
+    <p style="color:var(--text-muted); font-size:14px; margin-bottom:16px;">
+      製品ルートフォルダ（<code>Assets/&lt;Vendor&gt;/&lt;Product&gt;</code>）を起点に、
+      以下の優先順でファイルを検索します。
+    </p>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:10px;">優先①：機械可読 JSON（製品ルート直下）</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <code>avatar-license.json</code>
+        <code>license.json</code>
+        <code>vn3-license.json</code>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:10px;">優先②：ライセンスフォルダ内のすべての文書ファイル</div>
+      <div style="color:var(--text-muted); font-size:14px; margin-bottom:10px;">
+        フォルダ名が以下のいずれかと一致する場合、中の文書ファイルをすべて対象にします。
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <code>License</code><code>Licenses</code><code>VN3</code>
+        <code>Terms</code><code>規約</code><code>利用規約</code><code>ライセンス</code>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:12px;">優先③：ファイル名にキーワードを含む文書ファイル（再帰スキャン）</div>
+      <table class="keyword-table">
+        <thead><tr><th>検索キーワード</th><th>対象拡張子</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">license, licence, ライセンス, 利用規約, terms, eula, vn3</td>
+            <td class="mono">.txt &nbsp;.pdf &nbsp;.md &nbsp;.html &nbsp;.htm</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notice">
+      <div class="notice-icon">⚠</div>
+      <div class="notice-body">
+        <strong>検出されない場合：</strong>
+        ライセンスファイルのファイル名・フォルダ名が上記パターンに合わない場合は未検出になります。
+        その場合は製品カードの「Ping」でフォルダを Project View に開き、手動でファイルを確認してください。
+        再分析すると最新の状態で再スキャンされます。
+      </div>
+    </div>
+  </div>
+
+  <!-- File Structure -->
+  <div class="section" id="files">
+    <div class="section-header">
+      <div class="section-icon">📁</div>
+      <h2>フォルダ構成 / File Structure</h2>
+    </div>
+    <div class="file-tree">
+      <span class="folder">Assets/StarSideUp/AvatarLicenseManager/</span><br>
+      &nbsp;&nbsp;<span class="folder">Editor/</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;AvatarLicenseManager.Editor.asmdef<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;AvatarLicenseDatabase.cs<span class="comment">// データモデル（ScriptableObject）</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;AvatarDependencyScanner.cs<span class="comment">// Prefab依存解析・製品ルート抽出</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;LicenseFileLocator.cs<span class="comment">// ライセンスファイル検索</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;AvatarLicenseManagerWindow.cs<span class="comment">// EditorWindow UI</span><br>
+      &nbsp;&nbsp;<span class="folder">Documentation/</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;SPEC.md<span class="comment">// 機能要件・設計仕様</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;HANDOFF.md<span class="comment">// 開発引継ぎ資料</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;README.html<span class="comment">// このファイル</span><br>
+      &nbsp;&nbsp;<span class="folder generated">Generated/</span><span class="comment">// ウィンドウ初回起動時に自動作成</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="generated">AvatarLicenseDatabase.asset</span><span class="comment">// 分析結果・メモの保存先</span><br>
+      &nbsp;&nbsp;package.json<br>
+      &nbsp;&nbsp;README.md
+    </div>
+  </div>
+
+  <!-- Notice -->
+  <div class="section" id="notice">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <h2>注意事項 / Notes</h2>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-title">法的助言ではありません</div>
+        <div class="card-desc">
+          本ツールはライセンスファイルの所在を把握するための補助ツールです。
+          利用可否の最終判断は利用規約の原文をご自身で確認のうえ行ってください。
+          本ツールの出力は法的根拠を持ちません。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">アセット本体を変更しません</div>
+        <div class="card-desc">
+          依存解析と表示のみを行います。Prefab・マテリアル・アニメーターなど、
+          分析対象のアセットファイルを変更することは一切ありません。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">製品グループ化の前提</div>
+        <div class="card-desc">
+          <code>Assets/&lt;Vendor&gt;/&lt;Product&gt;</code> という 3 階層のフォルダ規則に
+          基づいて製品を認識します。この規則に従っていないアセットは別の製品として
+          グループ化されるか、検出されないことがあります。販売者名・製品名は手動修正できます。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Editor 専用ツール</div>
+        <div class="card-desc">
+          Unity Editor でのみ動作します。ビルドには含まれず、
+          VRChat のアバター・ワールドのパフォーマンスには一切影響しません。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Avatar License Manager v0.1.0 — by StarSideUp<br>
+    Unity 2022.3.22f1 以降対応 ／ VRChat Avatar SDK 3 対応
+  </div>
+
+</div>
+</body>
+</html>

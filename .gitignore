@@ -1,0 +1,29 @@
+# Unity generated local state
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Tool-generated user data (not part of the package)
+Generated/
+
+# IDE / generated project files
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Unity crash reports
+sysinfo.txt

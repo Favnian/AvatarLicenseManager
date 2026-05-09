@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "productName": "StarSideUpが公開するアセット一式",
+  "vendorName": "StarSideUp",
+  "scope": "product",
+  "sourceDocuments": ["Assets/StarSideUp/AvatarLicenseManager/20250128105755vn3license_ja.pdf"],
+  "permissions": {
+    "personalUse": "allow",
+    "corporateUse": "ask",
+    "commercialUse": "conditional",
+    "modification": "allow",
+    "redistribution": "deny",
+    "modifiedRedistribution": "deny",
+    "vrchatUpload": "allow",
+    "publicAvatar": "deny",
+    "pedestalUse": "notMentioned",
+    "videoStreaming": "allow",
+    "socialMediaPosting": "allow",
+    "adultExpression": "conditional",
+    "violentExpression": "conditional",
+    "politicalReligiousUse": "deny",
+    "nftUse": "notMentioned",
+    "aiTraining": "notMentioned"
+  },
+  "requirements": {
+    "credit": "conditional",
+    "usageReport": "notMentioned",
+    "contactBeforeUse": "notMentioned"
+  },
+  "notes": "【commercialUse】個人による商用利用は許可されるが、特記事項により商用利用時はクレジット表記（「StarSideUp」）が必須。【adultExpression】性的表現への利用は許可されるが、成人向けコンテンツである旨の棲み分けを行うこと。【violentExpression】暴力的表現への利用は許可されるが、棲み分けを行うこと。【credit】通常利用時はクレジット表記は任意（推奨）だが、商用利用時は必須。【publicAvatar】VRChat等でのパブリックアバター（第三者がclone可能な状態での公開）は、項目E「第三者に利用させる目的でのアップロード」に該当するため禁止と解釈。【メッシュ転用衣装の二次創作（S項）】本データのメッシュ・ウェイトをコピーした衣装データの作成は、私的かつ本人のみの利用に限り許可。配布不可。【メッシュ非転用の衣装・テクスチャ二次創作（T項）】本データの規格に準拠した新たな衣装・テクスチャデータの作成・配布は、営利・非営利を問わず許可。【調整・改変の外部委託（L項）】第三者への委託および委託目的での本データの貸与は禁止。",
+  "lastReviewedAt": "2026-05-09"
+}
