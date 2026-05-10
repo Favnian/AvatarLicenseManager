@@ -26,6 +26,10 @@ namespace StarSideUp.AvatarLicenseManager.Editor
         private int _aggregationCovered;
         private int _aggregationUncovered;
 
+        // ライセンス未検出製品のみ表示フィルター (#21)
+        private bool _showUndetectedOnly;
+        private const string ShowUndetectedPrefKey = "AvatarLicenseManager.ShowUndetectedOnly";
+
         private const string DatabaseAssetPath =
             "Assets/StarSideUp/AvatarLicenseManager/Generated/AvatarLicenseDatabase.asset";
 
@@ -36,6 +40,7 @@ namespace StarSideUp.AvatarLicenseManager.Editor
         {
             LoadOrCreateDatabase();
             RestoreLastEntry();
+            _showUndetectedOnly = EditorPrefs.GetBool(ShowUndetectedPrefKey, false);
         }
 
         private void OnGUI()
@@ -53,6 +58,7 @@ namespace StarSideUp.AvatarLicenseManager.Editor
 
             DrawSectionHeader("分析結果 / Analysis Results");
             DrawResultsSummary();
+            DrawFilterBar();
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             DrawAggregation();
@@ -311,12 +317,32 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                 withoutLicense > 0 ? MessageType.Warning : MessageType.Info);
         }
 
+        private void DrawFilterBar()
+        {
+            if (_activeEntry == null) return;
+            EditorGUI.BeginChangeCheck();
+            bool newVal = EditorGUILayout.ToggleLeft(
+                "ライセンス未検出のみ表示 / Show undetected only",
+                _showUndetectedOnly);
+            if (EditorGUI.EndChangeCheck())
+            {
+                _showUndetectedOnly = newVal;
+                EditorPrefs.SetBool(ShowUndetectedPrefKey, newVal);
+            }
+        }
+
         private void DrawProductList()
         {
             if (_activeEntry?.Products == null) return;
             foreach (ProductLicenseEntry product in _activeEntry.Products)
             {
-                if (product != null) DrawProductCard(product);
+                if (product == null) continue;
+                // フィルター ON のときはライセンスファイルが1件以上ある製品をスキップ (#21)
+                if (_showUndetectedOnly &&
+                    product.LicenseFilePaths != null &&
+                    product.LicenseFilePaths.Count > 0)
+                    continue;
+                DrawProductCard(product);
                 EditorGUILayout.Space(4);
             }
         }
