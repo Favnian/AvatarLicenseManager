@@ -28,8 +28,16 @@ namespace StarSideUp.AvatarLicenseManager.Editor
             {
                 string json = File.ReadAllText(absolute, System.Text.Encoding.UTF8);
                 var result = JsonUtility.FromJson<AvatarLicenseJson>(json);
-                // schemaVersion が 0 以下なら非対応フォーマット
-                return result != null && result.schemaVersion > 0 ? result : null;
+                if (result == null || result.schemaVersion <= 0)
+                {
+                    // schemaVersion なし = 本ツール用フォーマットではない (#8)
+                    Debug.LogWarning(
+                        $"[AvatarLicenseManager] {System.IO.Path.GetFileName(absolutePath)}: " +
+                        "schemaVersion フィールドがないため読み飛ばしました。" +
+                        " avatar-license.json スキーマに準拠しているか確認してください。");
+                    return null;
+                }
+                return result;
             }
             catch
             {

@@ -3,7 +3,7 @@
   "productName": "StarSideUpが公開するアセット一式",
   "vendorName": "StarSideUp",
   "scope": "product",
-  "sourceDocuments": ["Assets/StarSideUp/AvatarLicenseManager/Documentation/Samples/20250128105755vn3license_ja.pdf"],
+  "sourceDocuments": ["Assets/StarSideUp/AvatarLicenseManager/20250128105755vn3license_ja.pdf"],
   "permissions": {
     "personalUse": "allow",
     "corporateUse": "ask",

@@ -228,12 +228,25 @@ namespace StarSideUp.AvatarLicenseManager.Editor
             foreach (string root in productRoots)
             {
                 ProductLicenseEntry prev = FindProduct(entry, root);
+
+                // 製品ルートでライセンスが見つからない場合、ベンダールートをフォールバック探索する (#2)
+                var licFiles = LicenseFileLocator.FindInFolder(root);
+                if (licFiles.Count == 0)
+                {
+                    string vendorRoot = AvatarDependencyScanner.ExtractVendorRootPath(root);
+                    if (!string.Equals(vendorRoot, root, System.StringComparison.OrdinalIgnoreCase)
+                        && AssetDatabase.IsValidFolder(vendorRoot))
+                    {
+                        licFiles = LicenseFileLocator.FindInFolder(vendorRoot);
+                    }
+                }
+
                 updated.Add(new ProductLicenseEntry
                 {
                     ProductRootPath  = root,
                     ProductName      = prev?.ProductName  ?? AvatarDependencyScanner.ExtractProductName(root),
                     VendorName       = prev?.VendorName   ?? AvatarDependencyScanner.ExtractVendorName(root),
-                    LicenseFilePaths = LicenseFileLocator.FindInFolder(root),
+                    LicenseFilePaths = licFiles,
                     Note             = prev?.Note         ?? string.Empty
                 });
             }
@@ -377,10 +390,18 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                         DrawLicenseFileRow(path);
                 }
 
-                // ライセンス内容（JSON があれば表示）
+                // ライセンス内容（JSON があれば表示。ある .json が読めない場合は警告）(#6)
+                bool hasJsonCandidate = product.LicenseFilePaths != null &&
+                    product.LicenseFilePaths.Exists(p =>
+                        p.EndsWith(".json", System.StringComparison.OrdinalIgnoreCase));
                 AvatarLicenseJson licenseJson = TryGetLicenseJson(product);
                 if (licenseJson != null)
                     DrawPermissionsTable(licenseJson);
+                else if (hasJsonCandidate)
+                    EditorGUILayout.HelpBox(
+                        "JSON ファイルが見つかりましたが読み込めませんでした。" +
+                        " schemaVersion フィールドが含まれているか確認してください。",
+                        MessageType.Warning);
 
                 EditorGUILayout.Space(4);
 
@@ -424,6 +445,13 @@ namespace StarSideUp.AvatarLicenseManager.Editor
 
         private static void OpenFile(string assetPath)
         {
+            // Assets/ 以外のパスは変換できない (#10)
+            if (string.IsNullOrEmpty(assetPath) ||
+                !assetPath.StartsWith("Assets", System.StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.LogWarning($"[AvatarLicenseManager] Cannot open non-Asset path: {assetPath}");
+                return;
+            }
             string absolute = Application.dataPath + assetPath.Substring("Assets".Length);
             if (File.Exists(absolute))
                 Application.OpenURL("file:///" + absolute.Replace('\\', '/'));
@@ -592,9 +620,14 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                 case "deny":         return "✕ 禁止";
                 case "conditional":  return "▲ 条件付き";
                 case "ask":          return "? 要確認";
+                case "required":     return "● 必要";
+                case "notrequired":  return "– 不要";
                 case "unknown":      return "? 不明";
                 case "notmentioned": return "– 記載なし";
-                default:             return string.IsNullOrEmpty(value) ? "– 記載なし" : value;
+                // null/空 = JSONフィールド欠如または未取得。notMentionedと区別する (#19)
+                case null:
+                case "":             return "· 未取得";
+                default:             return $"? {value}";
             }
         }
 
@@ -613,8 +646,11 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                     return dark ? new Color(0.55f, 0.80f, 1f) : new Color(0.1f, 0.3f, 0.7f);
                 case "unknown":
                     return dark ? new Color(0.7f, 0.7f, 0.7f) : new Color(0.45f, 0.45f, 0.45f);
+                case null:
+                case "":
+                    return new Color(0.38f, 0.38f, 0.38f); // 未取得 (null/empty) は薄いグレー (#19)
                 default:
-                    return new Color(0.5f, 0.5f, 0.5f); // notMentioned / null
+                    return new Color(0.5f, 0.5f, 0.5f); // notMentioned
             }
         }
 
@@ -666,10 +702,11 @@ namespace StarSideUp.AvatarLicenseManager.Editor
 
             DrawSectionHeader("アバター総合評価 / Avatar License Summary");
 
-            // カバレッジ表示
+            // カバレッジ表示 (#11: 未取得があることを明確に)
             string coverMsg = _aggregationUncovered > 0
-                ? $"ライセンスJSON 取得済み: {_aggregationCovered}製品　未取得: {_aggregationUncovered}製品（未取得分は集計外）"
-                : $"全{_aggregationCovered}製品のライセンスJSONから集計しています。";
+                ? $"⚠ JSON 取得済み: {_aggregationCovered}製品 / 未取得: {_aggregationUncovered}製品\n" +
+                  "未取得製品のライセンスは不明なため、各項目は「不明（unknown）」として処理されています。"
+                : $"全{_aggregationCovered}製品の avatar-license.json から集計しています。";
 
             bool hasStrict = false;
             foreach (string v in _aggregation.Values)
@@ -745,38 +782,70 @@ namespace StarSideUp.AvatarLicenseManager.Editor
 
                 foreach (var (field, _) in PermissionRows)
                     result[field] = Stricter(result[field], GetPermValue(json.permissions, field));
+                // Requirements は別の集計順序を使う (#7)
                 foreach (var (field, _) in RequirementRows)
-                    result[field] = Stricter(result[field], GetReqValue(json.requirements, field));
+                    result[field] = StricterReq(result[field], GetReqValue(json.requirements, field));
             }
 
-            // JSON がない製品がある場合、null フィールドは "unknown" 扱い
-            var keys = new List<string>(result.Keys);
-            foreach (string key in keys)
+            // 未取得製品がある場合、全フィールドに unknown を適用して許可寄りに見えないようにする (#3)
+            if (uncovered > 0)
+            {
+                var keys = new List<string>(result.Keys);
+                foreach (string key in keys)
+                {
+                    bool isReq = System.Array.Exists(RequirementRows, r => r.Field == key);
+                    result[key] = isReq
+                        ? StricterReq(result[key], "unknown")
+                        : Stricter(result[key], "unknown");
+                }
+            }
+
+            // JSON が1件も取得できていない場合は空文字に
+            var allKeys = new List<string>(result.Keys);
+            foreach (string key in allKeys)
                 if (result[key] == null)
                     result[key] = covered > 0 ? "unknown" : string.Empty;
 
             return result;
         }
 
-        /// <summary>厳しい方の値を返す。SPEC 集計方針: deny > ask > conditional > unknown > notMentioned > allow</summary>
+        /// <summary>Permissions: 厳しい方の値を返す。deny > ask > conditional > unknown > notMentioned > allow</summary>
         private static string Stricter(string current, string candidate)
         {
-            return ValueSeverity(candidate) > ValueSeverity(current) ? candidate : current;
+            return PermSeverity(candidate) > PermSeverity(current) ? candidate : current;
         }
 
-        private static int ValueSeverity(string value)
+        /// <summary>Requirements: 厳しい方の値を返す。ask > required > conditional > unknown > notMentioned > notRequired (#7)</summary>
+        private static string StricterReq(string current, string candidate)
+        {
+            return ReqSeverity(candidate) > ReqSeverity(current) ? candidate : current;
+        }
+
+        private static int PermSeverity(string value)
         {
             switch (value?.ToLowerInvariant())
             {
-                case "deny":                   return 5;
-                case "ask":                    return 4;
-                case "conditional":
-                case "required":               return 3;
-                case "unknown":                return 2;
-                case "notmentioned":
-                case "notrequired":            return 1;
-                case "allow":                  return 0;
-                default:                       return -1; // null → 最小
+                case "deny":         return 5;
+                case "ask":          return 4;
+                case "conditional":  return 3;
+                case "unknown":      return 2;
+                case "notmentioned": return 1;
+                case "allow":        return 0;
+                default:             return -1; // null → 最小
+            }
+        }
+
+        private static int ReqSeverity(string value)
+        {
+            switch (value?.ToLowerInvariant())
+            {
+                case "ask":          return 4;
+                case "required":     return 3;
+                case "conditional":  return 2;
+                case "unknown":      return 1;
+                case "notmentioned": return 0;
+                case "notrequired":  return -1;
+                default:             return -1; // null → 最小
             }
         }
     }
