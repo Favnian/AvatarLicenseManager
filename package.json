@@ -4,8 +4,13 @@
   "version": "0.1.0",
   "unity": "2022.3",
   "description": "Unity Editor extension for mapping VRChat avatar assets to license summaries and visualizing usage permissions.",
+  "license": "MIT",
   "author": {
-    "name": "StarSideUp"
+    "name": "StarSideUp",
+    "url": "https://github.com/Favnian"
+  },
+  "vpmDependencies": {
+    "com.vrchat.avatars": "3.10.x"
   },
   "keywords": [
     "VRChat",
