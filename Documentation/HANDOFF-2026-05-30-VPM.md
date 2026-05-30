@@ -8,7 +8,7 @@ Date: 2026-05-30
 - Prepared listing source for VCC URL: `https://favnian.github.io/AvatarLicenseManager-VPM/index.json`
 - Configured the listing to reference package repository `Favnian/AvatarLicenseManager`.
 - Added a package release workflow draft at `.github/workflows/release.yml`.
-- Updated `package.json` with `license`, `author.url`, and `vpmDependencies`.
+- Updated `package.json` with `license`, `author.email`, `author.url`, and `vpmDependencies`.
 
 ## Recommendation
 
@@ -30,7 +30,7 @@ Date: 2026-05-30
 
 ## Remaining Tasks
 
-- Add a real `author.email` to `package.json` before publishing if VPM validation requires it.
+- Replace the GitHub noreply `author.email` in `package.json` with a project contact email later if desired.
 - Make `Favnian/AvatarLicenseManager` public before the listing is expected to resolve package releases.
 - Publish the first release through the `Build Release` workflow.
 - Enable GitHub Pages with GitHub Actions for `Favnian/AvatarLicenseManager-VPM`.
