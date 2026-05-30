@@ -21,17 +21,18 @@ Date: 2026-05-30
 - Confirmed `package.json` parses as JSON.
 - Confirmed `source.json` parses as JSON.
 - Confirmed GitHub CLI access works with the `Favnian` account when run with external access.
+- Confirmed `Favnian/AvatarLicenseManager` is public.
+- Published GitHub Release `0.1.0`: `https://github.com/Favnian/AvatarLicenseManager/releases/tag/0.1.0`
+- Confirmed release assets include package zip, `.unitypackage`, and `package.json`.
+- Rebuilt and deployed the VPM listing through GitHub Pages.
+- Confirmed VPM index is reachable: `https://favnian.github.io/AvatarLicenseManager-VPM/index.json`
 
 ## Not Yet Verified
 
-- GitHub Pages deployment has not been verified.
-- The package release workflow has not been run.
 - VCC installation from the listing URL has not been verified.
 
 ## Remaining Tasks
 
 - Replace the GitHub noreply `author.email` in `package.json` with a project contact email later if desired.
-- Make `Favnian/AvatarLicenseManager` public before the listing is expected to resolve package releases.
-- Publish the first release through the `Build Release` workflow.
-- Enable GitHub Pages with GitHub Actions for `Favnian/AvatarLicenseManager-VPM`.
-- Rebuild the listing after the first package release.
+- Add `https://favnian.github.io/AvatarLicenseManager-VPM/index.json` to VCC and verify installation into a clean project.
+- Consider changing the next public package version to a preview-style version such as `0.1.1-preview` or documenting that `0.1.0` is an early preview.
