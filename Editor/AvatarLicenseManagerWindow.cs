@@ -490,7 +490,7 @@ namespace StarSideUp.AvatarLicenseManager.Editor
             _database = AssetDatabase.LoadAssetAtPath<AvatarLicenseDatabase>(DatabaseAssetPath);
             if (_database != null) return;
 
-            EnsureFolder("Assets/StarSideUp/AvatarLicenseManager", "Generated");
+            EnsureFolderPath("Assets/StarSideUp/AvatarLicenseManager/Generated");
             _database = CreateInstance<AvatarLicenseDatabase>();
             AssetDatabase.CreateAsset(_database, DatabaseAssetPath);
             AssetDatabase.SaveAssets();
@@ -508,10 +508,19 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                 _targetPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(_targetAssetPath);
         }
 
-        private static void EnsureFolder(string parent, string name)
+        private static void EnsureFolderPath(string folderPath)
         {
-            if (!AssetDatabase.IsValidFolder(parent + "/" + name))
-                AssetDatabase.CreateFolder(parent, name);
+            if (AssetDatabase.IsValidFolder(folderPath)) return;
+
+            string[] parts = folderPath.Split('/');
+            string current = parts[0];
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string next = current + "/" + parts[i];
+                if (!AssetDatabase.IsValidFolder(next))
+                    AssetDatabase.CreateFolder(current, parts[i]);
+                current = next;
+            }
         }
 
         private static void DrawSectionHeader(string label)

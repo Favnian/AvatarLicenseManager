@@ -32,7 +32,7 @@ namespace StarSideUp.AvatarLicenseManager.Editor
                 {
                     // schemaVersion なし = 本ツール用フォーマットではない (#8)
                     Debug.LogWarning(
-                        $"[AvatarLicenseManager] {System.IO.Path.GetFileName(absolutePath)}: " +
+                        $"[AvatarLicenseManager] {System.IO.Path.GetFileName(absolute)}: " +
                         "schemaVersion フィールドがないため読み飛ばしました。" +
                         " avatar-license.json スキーマに準拠しているか確認してください。");
                     return null;

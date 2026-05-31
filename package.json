@@ -1,7 +1,7 @@
 {
   "name": "com.starsideup.avatar-license-manager",
   "displayName": "Avatar License Manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unity": "2022.3",
   "description": "Unity Editor extension for mapping VRChat avatar assets to license summaries and visualizing usage permissions.",
   "license": "MIT",
